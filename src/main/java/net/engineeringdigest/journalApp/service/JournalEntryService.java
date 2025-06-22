@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +33,7 @@ public class JournalEntryService {
           entry.setDate(LocalDate.now());
           JournalEntry saved = journalEnrtyRepository.save(entry);
           user.getJournalEntries().add(saved);
-          userService.saveEntry(user);
+          userService.saveUser(user);
 
       }catch (Exception e) {
           System.out.println("Error in saving journal entry");
@@ -49,11 +48,20 @@ public class JournalEntryService {
         return journalEnrtyRepository.findById(id);
     }
 
-    public void deleteEntryById(ObjectId id, String userName){
-        User user = userService.findByUserName(userName);
-        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
-        userService.saveEntry(user);
-        journalEnrtyRepository.deleteById(id);
+    @Transactional
+    public boolean deleteEntryById(ObjectId id, String userName){
+        boolean removed = false;
+        try {
+            User user = userService.findByUserName(userName);
+            removed = user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+            if(removed){
+                userService.saveUser(user);
+                journalEnrtyRepository.deleteById(id);
+            }
+        }catch (Exception e){
+            throw new RuntimeException("Journal entry cannot be deleted");
+        }
+        return removed;
     }
 
 }
