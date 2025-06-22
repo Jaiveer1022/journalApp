@@ -15,7 +15,7 @@ public class WeatherService {
 
 
     @Autowired
-    RestTemplate  restTemplate;
+    private RestTemplate  restTemplate;
 
     public WeatherResponse getWether(String city){
         String finalAPI = API.replace("CITY", city).replace("API_KEY", apiKey);

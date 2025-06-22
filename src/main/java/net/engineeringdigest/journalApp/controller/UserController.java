@@ -1,5 +1,6 @@
 package net.engineeringdigest.journalApp.controller;
 
+import net.engineeringdigest.journalApp.api.response.WeatherResponse;
 import net.engineeringdigest.journalApp.entity.User;
 import net.engineeringdigest.journalApp.service.UserService;
 import net.engineeringdigest.journalApp.service.WeatherService;
@@ -42,7 +43,16 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> weather(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-        
+        WeatherResponse weather = weatherService.getWether("Gurgaon");
+
+        String weatherInfo = "";
+        if(weather != null){
+            if(weather.getCurrent() != null){
+                weatherInfo = "Weather feels like : " + weather.getCurrent().getFeelslike() + " with the weather " + weather.getCurrent().getWeatherDescriptions();
+            }else{
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>(weatherInfo, HttpStatus.OK);
     }
 }
