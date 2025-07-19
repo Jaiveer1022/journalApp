@@ -23,6 +23,7 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN") // Only users with ROLE_ADMIN
                 .antMatchers("/journal/**", "/user/**").authenticated()
                 .anyRequest().permitAll()
                 .and().httpBasic();
